@@ -1,0 +1,16 @@
+{
+  "name": "01.LangChain",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/sungkwangkim/LangGraph-js-study.git",
+  "author": "sungkwang <sungkwang@wantedlab.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.77",
+    "@langchain/google-genai": "^0.2.18",
+    "dotenv": "^17.2.2"
+  }
+}
