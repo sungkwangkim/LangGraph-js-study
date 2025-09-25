@@ -2,6 +2,7 @@
   "name": "01.LangChain",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "repository": "https://github.com/sungkwangkim/LangGraph-js-study.git",
   "author": "sungkwang <sungkwang@wantedlab.com>",
   "license": "MIT",
