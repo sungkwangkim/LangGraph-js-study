@@ -76,3 +76,8 @@ Agent를 만들 때 LangGraph 없이도 구현은 가능합니다.
 ### LangGrapgh는 복잡한 문제를 단순하게 푸는 라이브러리.
 
 ![랭체인 커뮤니티](./assert/parksungchul.png)
+
+## reference
+
+- https://github.com/google-gemini/gemini-fullstack-langgraph-quickstart
+- https://www.linkedin.com/posts/fupfin_%EB%AA%A8%EB%8D%98-%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EC%97%94%EC%A7%80%EB%8B%88%EC%96%B4%EB%A7%81-activity-7323868443059834881-owA_?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFtOTVMBVYMyqQwOmIqL5kEsAWv_w2BmUFI
