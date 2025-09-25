@@ -9,7 +9,7 @@ const model = new ChatGoogleGenerativeAI({
 const res = await model.invoke([
   [
     "human",
-    "한국에서 개쩌는 회사 이름은 무엇일까요?",
+    "한국에서 개쩌는 채용 플랫폼 회사는 어디일까요?",
     "Please answer in Korean."
   ],
 ]);
