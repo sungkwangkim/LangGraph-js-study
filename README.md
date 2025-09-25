@@ -66,11 +66,12 @@ class PDFRetrievalChain(RetrievalChain):
 - 강의: https://youtu.be/-Jym-zji7YI?si=eidehdvMvpHRh9g8
 - Demo: https://smith.langchain.com/
 
-## LangGraph를 왜 쓸까? (나의 생각)
+## LangChain, LangGraph를 왜 쓸까? (나의 생각)
 
 Agent를 만들 때 LangGraph 없이도 구현은 가능합니다.
 단순한 단일 흐름(Flow) 의 경우라면 직접 코드로 처리해도 무방합니다.
-하지만 실제 서비스에서는 복잡한 요구사항이 자주 발생합니다:
+
+하지만 실제 서비스에서는 복잡한 상황이 자주 발생합니다:
 
 ### LangGrapgh는 복잡한 문제를 단순하게 푸는 라이브러리.
 
