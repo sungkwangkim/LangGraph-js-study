@@ -65,3 +65,13 @@ class PDFRetrievalChain(RetrievalChain):
   - **모니터링 (Monitoring)**: 애플리케이션의 실시간 상태를 모니터링하고 문제를 조기에 감지할 수 있게 합니다.
 - 강의: https://youtu.be/-Jym-zji7YI?si=eidehdvMvpHRh9g8
 - Demo: https://smith.langchain.com/
+
+## LangGraph를 왜 쓸까? (나의 생각)
+
+Agent를 만들 때 LangGraph 없이도 구현은 가능합니다.
+단순한 단일 흐름(Flow) 의 경우라면 직접 코드로 처리해도 무방합니다.
+하지만 실제 서비스에서는 복잡한 요구사항이 자주 발생합니다:
+
+### LangGrapgh는 복잡한 문제를 단순하게 푸는 라이브러리.
+
+![랭체인 커뮤니티](./assert/parksungchul.png)
