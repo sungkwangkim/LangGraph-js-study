@@ -2,8 +2,8 @@ import { END } from "@langchain/langgraph";
 import { pull } from "langchain/hub";
 import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-// import { ChatOpenAI } from "@langchain/openai";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatOpenAI } from "@langchain/openai";
+// import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { AIMessage, BaseMessage } from "@langchain/core/messages";
 import { tools } from './tool.ts'
 import type { GraphState } from './state.ts'
@@ -21,10 +21,9 @@ export function shouldRetrieve(state: typeof GraphState.State): string {
   const lastMessage = messages[messages.length - 1];
 
   if ("tool_calls" in lastMessage && Array.isArray(lastMessage.tool_calls) && lastMessage.tool_calls.length) {
-    console.log("---DECISION: RETRIEVE---");
+    console.log("---결정: 검색 진행---");
     return "retrieve";
   }
-  console.log("---결정: 검색 진행---");
 
    // 도구 호출이 없으면 종료합니다.
   return END;
@@ -64,8 +63,15 @@ const prompt = ChatPromptTemplate.fromTemplate(
   No: 문서가 질문과 관련이 없습니다.`,
   );
 
-  const model = new ChatGoogleGenerativeAI({
-    model: "gemini-2.0-flash-lite",
+  // const model = new ChatGoogleGenerativeAI({
+  //   model: "gemini-2.0-flash-lite",
+  // }).bindTools([tool], {
+  //   tool_choice: tool.name,
+  // });
+
+  const model = new ChatOpenAI({
+    model: "gpt-4o",
+    temperature: 0,
   }).bindTools([tool], {
     tool_choice: tool.name,
   });
@@ -133,8 +139,14 @@ export async function agent(state: typeof GraphState.State): Promise<Partial<typ
     return true;
   });
 
-  const model = new ChatGoogleGenerativeAI({
-    model: "gemini-2.0-flash-lite",
+  // const model = new ChatGoogleGenerativeAI({
+  //   model: "gemini-2.0-flash-lite",
+  //   temperature: 0,
+  //   streaming: true,
+  // }).bindTools(tools);
+
+  const model = new ChatOpenAI({
+    model: "gpt-4o",
     temperature: 0,
     streaming: true,
   }).bindTools(tools);
@@ -165,11 +177,17 @@ export async function rewrite(state: typeof GraphState.State): Promise<Partial<t
   );
 
   // Grader
-  const model = new ChatGoogleGenerativeAI({
-    model: "gemini-2.0-flash-lite",
+  // const model = new ChatGoogleGenerativeAI({
+  //   model: "gemini-2.0-flash-lite",
+  //   temperature: 0,
+  //   streaming: true,
+  // })
+
+  const model = new ChatOpenAI({
+    model: "gpt-4o",
     temperature: 0,
     streaming: true,
-  })
+  });
   const response = await prompt.pipe(model).invoke({ question });
   return {
     messages: [response],
@@ -196,11 +214,17 @@ export async function generate(state: typeof GraphState.State): Promise<Partial<
 
   const prompt = await pull<ChatPromptTemplate>("rlm/rag-prompt");
 
-  const llm = new ChatGoogleGenerativeAI({
-    model: "gemini-2.0-flash-lite",
+  // const llm = new ChatGoogleGenerativeAI({
+  //   model: "gemini-2.0-flash-lite",
+  //   temperature: 0,
+  //   streaming: true,
+  // })
+
+  const llm = new ChatOpenAI({
+    model: "gpt-4o",
     temperature: 0,
     streaming: true,
-  })
+  });
 
   const ragChain = prompt.pipe(llm);
 

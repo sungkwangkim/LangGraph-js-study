@@ -3,9 +3,9 @@ import { agent, gradeDocuments, rewrite, generate, shouldRetrieve, checkRelevanc
 import { toolNode } from './tool.ts'
 import { GraphState } from './state.ts'
 
-// Define the graph
+// 그래프 정의
 const builder = new StateGraph(GraphState)
-  // Define the nodes which we'll cycle between.
+  // 순환할 노드들을 정의합니다.
   .addNode("agent", agent)
   .addNode("retrieve", toolNode)
   .addNode("gradeDocuments", gradeDocuments)
@@ -16,10 +16,10 @@ const builder = new StateGraph(GraphState)
 
 builder.addEdge(START, "agent");
 
-// Decide whether to retrieve
+// 검색 여부 결정
 builder.addConditionalEdges(
   "agent",
-  // Assess agent decision
+  // 에이전트 결정 평가
   shouldRetrieve,
 );
 

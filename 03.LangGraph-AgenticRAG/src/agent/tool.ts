@@ -4,14 +4,14 @@ import { retriever } from './retriever.ts'
 import type { GraphState } from './state.ts'
 
 
-// Lilian Weng의 블로그 게시물을 검색하는 도구를 생성합니다.
-// 이 도구는 LLM 에이전트, 프롬프트 엔지니어링, LLM에 대한 적대적 공격 관련 정보를 검색합니다.
+// 잠실 맛집 블로그 게시물을 검색하는 도구를 생성합니다.
+// 직장인들의 점심 메뉴 관련 정보를 검색합니다.
 const tool = createRetrieverTool(
   retriever,
   {
     name: "retrieve_blog_posts",
     description:
-      "LLM 에이전트, 프롬프트 엔지니어링, LLM에 대한 적대적 공격에 관한 Lilian Weng의 블로그 게시물을 검색하고 정보를 반환합니다.",
+      "송파구 잠실 및 잠실역 근처 점심 맛집 게시물을 검색하고 정보를 반환합니다.",
   },
 );
 
