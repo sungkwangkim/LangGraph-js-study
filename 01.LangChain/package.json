@@ -12,6 +12,6 @@
   "dependencies": {
     "@langchain/core": "^0.3.77",
     "@langchain/google-genai": "^0.2.18",
-    "dotenv": "^17.2.2"
+    "dotenv": "^16.4.5"
   }
 }
