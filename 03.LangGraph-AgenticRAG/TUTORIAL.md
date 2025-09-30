@@ -420,20 +420,20 @@ npm install express @types/express
 기존 `src/index.ts` 파일의 내용을 다음 코드로 교체하여 Express 서버를 설정합니다.
 
 ```typescript
-import express from 'express';
-import { graph } from './agent/graph.ts';
-import { HumanMessage } from '@langchain/core/messages';
+import express from "express";
+import { graph } from "./agent/graph.ts";
+import { HumanMessage } from "@langchain/core/messages";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-app.get('/invoke', async (req, res) => {
+app.get("/invoke", async (req, res) => {
   const { message } = req.query as { message: string };
 
   if (!message) {
-    return res.status(400).send({ error: 'Message is required' });
+    return res.status(400).send({ error: "Message is required" });
   }
 
   const initialState = {
@@ -445,7 +445,7 @@ app.get('/invoke', async (req, res) => {
     res.send(result);
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: 'An error occurred' });
+    res.status(500).send({ error: "An error occurred" });
   }
 });
 
@@ -489,5 +489,7 @@ app.listen(port, () => {
     ```bash
     curl "http://localhost:3000/invoke?message=남자들이%20좋아할만한%20점심%20메뉴는?"
     ```
+
+    ![experss](../assert/express-server.png)
 
 이제 RAG 에이전트가 API 서비스로 동작하며 HTTP 요청에 응답하는 것을 확인할 수 있습니다.
