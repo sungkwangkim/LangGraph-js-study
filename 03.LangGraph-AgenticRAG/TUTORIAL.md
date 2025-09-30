@@ -6,8 +6,11 @@
 
 먼저, 프로젝트에 필요한 모든 라이브러리를 설치합니다. 터미널에서 다음 명령어를 실행하여 필요한 모든 패키지를 한 번에 설치합니다.
 
+- **중요:** `dotenv` 최신 버전이 아니라 16버전을 설치해야 함.
+  - 17 버전과 @langchain/langgraph 충돌이 있음.
+
 ```bash
-npm install @langchain/community @langchain/core @langchain/google-genai @langchain/langgraph @langchain/openai @langchain/textsplitters cheerio dotenv dotenv-flow langchain ts-node typescript zod zod-to-json-schema
+npm install @langchain/community @langchain/core @langchain/google-genai @langchain/langgraph @langchain/openai @langchain/textsplitters cheerio dotenv@16 dotenv-flow langchain ts-node typescript zod zod-to-json-schema
 ```
 
 이 명령어는 `package.json` 파일에 필요한 모든 의존성을 자동으로 추가하고 설치합니다.
@@ -379,7 +382,7 @@ export const graph = builder.compile();
 import { HumanMessage } from "@langchain/core/messages";
 import { graph } from "./agent/graph.ts";
 
-const message = "점심에 파스타 잘하는 식당은?";
+const message = "남자들이 좋아할만한 점심 메뉴는?";
 
 const initialState = {
   messages: [new HumanMessage(message)],
