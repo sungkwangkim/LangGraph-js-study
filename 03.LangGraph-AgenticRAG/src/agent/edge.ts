@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 // import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { AIMessage, BaseMessage } from "@langchain/core/messages";
+import { AIMessage } from "@langchain/core/messages";
 import { tools } from './tool.ts'
 import type { GraphState } from './state.ts'
 
