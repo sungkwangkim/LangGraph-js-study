@@ -1,14 +1,32 @@
+import express from 'express';
+import { graph } from './agent/graph.ts';
 import { HumanMessage } from '@langchain/core/messages';
 
-import { graph } from './agent/graph.ts';
+const app = express();
+const port = 3000;
 
+app.use(express.json());
 
-const message = "점심에 파스타 잘하는 식당은?"
+app.get('/invoke', async (req, res) => {
+  const { message } = req.query as { message: string };
 
-const initialState = {
+  if (!message) {
+    return res.status(400).send({ error: 'Message is required' });
+  }
+
+  const initialState = {
     messages: [new HumanMessage(message)],
   };
 
-const result = await graph.invoke(initialState);
+  try {
+    const result = await graph.invoke(initialState);
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: 'An error occurred' });
+  }
+});
 
-console.log(result)
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});

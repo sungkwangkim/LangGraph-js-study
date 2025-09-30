@@ -402,3 +402,92 @@ npm run dev
 ```
 
 이제 에이전트가 사용자의 질문에 답변하기 위해 문서를 검색하고, 관련성을 평가하며, 필요한 경우 질문을 다시 작성하고, 최종적으로 답변을 생성하는 과정을 볼 수 있습니다.
+
+## 부록 9단계: Express 서버를 올려서 API로 만들어보자.
+
+지금까지 만든 RAG 에이전트를 Express.js를 사용하여 웹 서비스로 만들어 보겠습니다. 이렇게 하면 외부에서 HTTP 요청을 통해 에이전트와 상호작용할 수 있습니다.
+
+### Express 설치
+
+먼저, Express와 TypeScript 타입을 설치합니다.
+
+```bash
+npm install express @types/express
+```
+
+### `index.ts` 수정
+
+기존 `src/index.ts` 파일의 내용을 다음 코드로 교체하여 Express 서버를 설정합니다.
+
+```typescript
+import express from 'express';
+import { graph } from './agent/graph.ts';
+import { HumanMessage } from '@langchain/core/messages';
+
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+app.get('/invoke', async (req, res) => {
+  const { message } = req.query as { message: string };
+
+  if (!message) {
+    return res.status(400).send({ error: 'Message is required' });
+  }
+
+  const initialState = {
+    messages: [new HumanMessage(message)],
+  };
+
+  try {
+    const result = await graph.invoke(initialState);
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: 'An error occurred' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+```
+
+### 서버 실행 및 테스트
+
+1.  **서버 실행**
+
+    터미널에서 다음 명령어를 실행하여 Express 서버를 시작합니다.
+
+    ```bash
+    npm run dev
+    ```
+
+    서버가 정상적으로 시작되면 다음과 같은 메시지가 표시됩니다.
+
+    ```
+    Server is running on http://localhost:3000
+    ```
+
+2.  **API 테스트**
+
+    웹 브라우저나 `curl`을 사용하여 GET 요청으로 에이전트에게 질문을 보낼 수 있습니다.
+
+    **웹 브라우저:**
+
+    주소창에 다음 URL을 입력합니다.
+
+    ```
+    http://localhost:3000/invoke?message=남자들이%20좋아할만한%20점심%20메뉴는?
+    ```
+
+    **curl:**
+
+    터미널에서 다음 명령어를 실행합니다.
+
+    ```bash
+    curl "http://localhost:3000/invoke?message=남자들이%20좋아할만한%20점심%20메뉴는?"
+    ```
+
+이제 RAG 에이전트가 API 서비스로 동작하며 HTTP 요청에 응답하는 것을 확인할 수 있습니다.
