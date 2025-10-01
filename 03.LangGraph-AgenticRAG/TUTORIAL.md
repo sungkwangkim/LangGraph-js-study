@@ -493,3 +493,51 @@ app.listen(port, () => {
     ![experss](../assert/express-server.png)
 
 이제 RAG 에이전트가 API 서비스로 동작하며 HTTP 요청에 응답하는 것을 확인할 수 있습니다.
+
+## 부록: 10단계 - LLM 모니터링 (LangSmith)
+
+LangSmith를 사용하여 LLM 애플리케이션의 모든 과정을 추적하고 모니터링하는 방법을 알아봅니다.
+
+1.  **LangSmith 가입**
+
+        [https://smith.langchain.com/](https://smith.langchain.com/)에 접속하여 가입합니다.
+
+    ![langsmith](../assert/lang-smith-1.png)
+
+2.  **API 키 생성**
+
+    가입 후, **Settings** 메뉴로 이동하여 새로운 API 키를 생성합니다.
+
+    ![langsmith](../assert/lang-smith-2.png)
+
+3.  **.env 파일 설정**
+
+    프로젝트의 `.env` 파일에 다음 환경 변수를 추가합니다. `LANGSMITH_API_KEY`에는 발급받은 API 키를 입력합니다.
+
+    ```
+    LANGSMITH_TRACING=true
+    LANGSMITH_API_KEY={your_api_key}
+    ```
+
+    ![langsmith](../assert/lang-smith-3.png)
+
+4.  **모니터링 확인**
+
+    이제 로컬 환경에서 실행되는 모든 LLM 쿼리가 LangSmith에 자동으로 기록됩니다. LangSmith 대시보드에서 다음 정보들을 확인할 수 있습니다.
+
+    - 총 토큰 사용량
+    - 실행 시간
+    - 요청 횟수 등
+
+    ![langsmith](../assert/lang-smith-4.png)
+
+5.  **단계별 추적**
+
+    각 LLM 질의에 대한 모든 단계가 상세하게 기록됩니다.
+
+    - 입력값이 포함된 전체 프롬프트
+    - 각 단계별 실행 시간
+    - 사용된 모델명
+    - 단계별 토큰 사용량
+
+    ![langsmith](../assert/lang-smith-5.png)
