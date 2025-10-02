@@ -8,7 +8,7 @@ import dotenvFlow from 'dotenv-flow';
 dotenvFlow.config();
 
 const urls = [
-  "https://blog.naver.com/ban__di/223783862789",
+  "https://blog.naver.com/PostView.naver?blogId=ban__di&logNo=223783862789&redirect=Dlog&widgetTypeCall=true&noTrackingCode=true&directAccess=false",
   "https://lazyyellow.tistory.com/87",
   "https://funktionalflow.com/%EC%9E%A0%EC%8B%A4-%EB%A7%9B%EC%A7%91/",
 ];
