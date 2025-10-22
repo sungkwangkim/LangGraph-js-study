@@ -237,7 +237,7 @@
 
 ## 부록) VectorDB의 두 가지 핵심 단계: Indexing Phase와 Query Phase
 
-LangChain 문서(https://docs.langchain.com/oss/javascript/integrations/vectorstores)의 그림을 참조하면, VectorDB는 크게 두 가지 핵심 단계로 작동합니다.
+[LangChain 문서](https://docs.langchain.com/oss/javascript/integrations/vectorstores)의 그림을 참조하면, VectorDB는 크게 두 가지 핵심 단계로 작동합니다.
 
 ![VectorDB](../assert/vector-stores.png)
 
