@@ -161,3 +161,78 @@
 - 실시간성이 중요
 - 영구 저장 불필요
 ```
+
+---
+
+## 4. 주요 임베딩 모델의 종류
+
+임베딩 모델은 처리하는 데이터 타입에 따라 크게 세 가지로 나눌 수 있습니다.
+
+### 📝 Text 임베딩 모델
+
+텍스트를 벡터로 변환하는 가장 일반적인 임베딩 모델입니다.
+
+**OpenAI (자체 모델 보유 ✅)**
+
+- `text-embedding-3-large`: 가장 강력한 성능, 3,072차원
+- `text-embedding-3-small`: 효율적이고 빠름, 1,536차원
+- `text-embedding-ada-002`: 이전 세대 모델
+
+**Anthropic/Claude (자체 모델 없음 ❌)**
+
+- Claude는 임베딩 모델을 제공하지 않습니다
+- Claude API를 사용하는 경우, 다른 임베딩 모델과 조합해서 사용해야 합니다
+
+**기타 오픈소스 모델**
+
+- `sentence-transformers`: Hugging Face의 인기 라이브러리
+- `BAAI/bge-large-en`: 중국 BAAI의 고성능 모델
+- `intfloat/e5-large-v2`: Microsoft의 오픈소스 모델
+- `Cohere embed-v3`: Cohere의 다국어 임베딩
+
+### 🖼️ Image 임베딩 모델
+
+이미지를 벡터로 변환하여 유사 이미지 검색, 이미지 분류 등에 활용합니다.
+
+**주요 모델**
+
+- `CLIP (OpenAI)`: 텍스트와 이미지를 같은 벡터 공간에 매핑 (멀티모달)
+- `ViT (Vision Transformer)`: Google의 이미지 전용 트랜스포머 모델
+- `ResNet`: 전통적인 CNN 기반 이미지 임베딩
+- `DINOv2 (Meta)`: Self-supervised learning 기반 최신 모델
+
+**활용 사례**
+
+- "이 옷과 비슷한 스타일 찾기"
+- "이 음식 사진과 유사한 레시피 검색"
+- 이미지 중복 탐지
+
+### 💻 Code 임베딩 모델
+
+소스 코드를 벡터로 변환하여 코드 검색, 유사 코드 탐지, 버그 패턴 분석 등에 사용합니다.
+
+**주요 모델**
+
+- `CodeBERT (Microsoft)`: 다양한 프로그래밍 언어 지원
+- `GraphCodeBERT`: 코드의 구조(AST)까지 이해
+- `StarCoder Embedding`: BigCode 프로젝트의 코드 임베딩
+- `OpenAI text-embedding-3`: 텍스트 모델이지만 코드도 잘 처리함
+
+**활용 사례**
+
+- "이 함수와 비슷한 기능의 코드 찾기"
+- "중복 코드 탐지"
+- "버그 패턴 학습 및 예측"
+
+**실제 서비스에서의 활용**
+
+우리가 일상적으로 사용하는 AI 코딩 도구들도 내부적으로 Code Embedding을 활용하고 있을 가능성이 높습니다:
+
+- **Cursor**
+- **Claude Code**
+- **Open AI (Codex)**
+- **CodeRabbit**
+
+이들 서비스는 수천~수만 개의 코드 파일 중에서 현재 작업과 관련된 코드만 빠르게 찾아내야 하는데, 이때 Code Embedding이 핵심 역할을 합니다.
+
+> 💡 **Tip**: OpenAI는 범용 텍스트 임베딩 모델로 코드도 처리 가능하지만, 전문 코드 임베딩 모델은 프로그래밍 언어의 구문(syntax)과 의미(semantics)를 더 깊이 이해합니다. 실제 AI 코딩 도구들은 이러한 전문 모델을 사용하거나, 자체 개발한 코드 임베딩 시스템을 활용할 것으로 추측됩니다.
