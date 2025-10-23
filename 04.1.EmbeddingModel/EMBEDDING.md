@@ -253,7 +253,7 @@
 
 ## 6. 잠실 점심메뉴 추천 Agent에 VectorDB 구조 적용 (04.1.LangGraph-AgenticRAG)
 
-이러한 VectorDB의 Indexing 및 Query 구조를 이해하고, 이전에 보여드렸던 '잠실 점심메뉴 추천 Agent'를 이 방식으로 변경해 보았습니다. 해당 코드는 `04.1.LangGraph-AgenticRAG` 디렉토리에 반영되어 있습니다. 이 프로젝트에서는 다음과 같은 방식으로 VectorDB 구조를 적용했습니다.
+이러한 VectorDB의 Indexing 및 Query 구조를 이해하고, 이전에 보여드렸던 '잠실 점심메뉴 추천 Agent'를 이 방식으로 변경해 보았습니다. 해당 코드는 `04.2.LangGraph-AgenticRAG` 디렉토리에 반영되어 있습니다. 이 프로젝트에서는 다음과 같은 방식으로 VectorDB 구조를 적용했습니다.
 
 - **Indexing Phase**: 맛집 데이터를 임베딩하여 VectorDB에 저장하는 로직을 구현했습니다.
 - **Query Phase**: 사용자 쿼리를 임베딩하고, VectorDB에서 유사한 맛집 정보를 검색하여 LLM에 전달하는 과정을 구현했습니다.
