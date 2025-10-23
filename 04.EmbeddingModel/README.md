@@ -25,8 +25,40 @@
     필요한 라이브러리를 설치합니다.
 
     ```bash
-    npm install @langchain/google-genai @langchain/openai dotenv openai
+    npm install @langchain/google-genai @langchain/openai dotenv
     ```
+
+4.  **실행 스크립트 추가**
+
+로컬 실행을 위한 `package.json`에서 `scripts` 코드를 넣습니다.
+
+```json
+{
+  "name": "04.embeddingmodel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
+```
+
+5. **src/index.js 파일 생성**
+   04.EmbeddingModel/src/index.js 파일에 있는 내용을 붙여 넣으세요.
+
+6. **실행해 보기**
+
+   터미널에서 커맨드를 입력,
+
+   ```bash
+   npm run dev
+   ```
+
+   Enter!
 
 ## 코드 설명
 
