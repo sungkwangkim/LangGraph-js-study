@@ -1,5 +1,4 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
-import OpenAI from "openai";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { config } from "dotenv";
 
