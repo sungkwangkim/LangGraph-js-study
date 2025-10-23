@@ -173,7 +173,7 @@
 - `text-embedding-3-small`: 효율적이고 빠름, 1,536차원
 - `text-embedding-ada-002`: 이전 세대 모델
 
-**Anthropic/Claude (자체 모델 없음 ❌)**
+**[Anthropic/Claude (자체 모델 없음 ❌)](https://docs.claude.com/en/docs/build-with-claude/embeddings)**
 
 - Claude는 임베딩 모델을 제공하지 않습니다
 - Claude API를 사용하는 경우, 다른 임베딩 모델과 조합해서 사용해야 합니다
