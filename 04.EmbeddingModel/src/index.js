@@ -3,9 +3,7 @@ import OpenAI from "openai";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { config } from "dotenv";
 
-// upstage curl로 호출하고 받은 값
-import { kingResponse } from '../sample/king.js';
-import { koreanKingResponse } from '../sample/koreanKing.js';
+
 
 // .env 파일에서 환경 변수 로드
 config();
@@ -74,8 +72,8 @@ function cosineSimilarity(vecA, vecB) {
  * =========================================
  */
 async function compareEmbeddingModels() {
-  const text1 = "king";
-  const text2 = "왕";
+  const text1 = "엄마";
+  const text2 = "아빠";
 
   console.log(`비교할 단어: "${text1}" vs "${text2}"`);
   console.log("=".repeat(40));
@@ -134,35 +132,39 @@ async function compareEmbeddingModels() {
   // --- 3. Upstage 임베딩 ---
   try {
     console.log("\n🚀 Upstage 모델 테스트 중...");
-    
 
-    // NOTE: Upstage Embedding Model은 LangChain.js에서 제대로 동작하지 않음
-    // const apiKey = "up_c6AhsMfjR4c4M6dDecLaEdRXOJ0gy";
-    // const openai = new OpenAI({
-    //     apiKey: apiKey,
-    //     baseURL: "https://api.upstage.ai/v1"
-    // });
-    
-    // embedQuery를 사용해 각 텍스트를 벡터로 변환
-    // const vecUpstage1 = await openai.embeddings.create({
-    //     input: text1,
-    //     model: "embedding-query",
-    // });
-    // const vecUpstage2 = await openai.embeddings.create({
-    //     input: text2,
-    //     model: "embedding-query",
-    // });
+    const getUpstageEmbedding = async (text) => {
+      const response = await fetch('https://api.upstage.ai/v1/embeddings', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.UPSTAGE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          input: text,
+          model: 'embedding-query'
+        })
+      });
 
-    // console.log(vecUpstage1.data[0].embedding);
-    // console.log(vecUpstage2);
+      if (!response.ok) {
+        throw new Error(`Upstage API 요청 실패: ${response.statusText}`);
+      }
 
+      const result = await response.json();
+      return result.data[0].embedding;
+    };
+
+    const vecUpstage1 = await getUpstageEmbedding(text1);
+    const vecUpstage2 = await getUpstageEmbedding(text2);
+
+    // console.log(vecUpstage1)
 
     // 유사도 계산
-    const similarityUpstage = cosineSimilarity(kingResponse.data[0].embedding, koreanKingResponse.data[0].embedding);
+    const similarityUpstage = cosineSimilarity(vecUpstage1, vecUpstage2);
     
     console.log(`[Upstage AI] 모델: embedding-query`);
-    console.log(`[Upstage AI] 벡터 차원: ${kingResponse.data[0].embedding.length}`);
-    console.log(`[Upstage AI] 유사도 점수: ${similarityUpstage}`);
+    console.log(`[Upstage AI] 벡터 차원: ${vecUpstage1.length}`);
+    console.log(`[Upstage AI] 유사도 점수: ${similarityUpstage.toFixed(6)}`);
 
   } catch (error) {
     console.error("[Upstage AI] 오류 발생:", error.message);
