@@ -91,18 +91,22 @@ uv --version
 2.  **가상 환경 활성화**:
 
     - **Mac/Linux**:
+
       ```bash
       source .venv/bin/activate
       ```
-    - **Windows**:
-      ```bash
-      .venv\Scripts\activate
-      ```
-      _(Windows 활성화 문제 해결: 오류가 발생하면 PowerShell을 관리자 권한으로 실행하고 `Set-ExecutionPolicy RemoteSigned`를 실행한 다음 `Y`를 입력하여 확인하십시오. 이렇게 하면 스크립트 실행이 허용됩니다.)_
 
     활성화되면 터미널 프롬프트에 일반적으로 가상 환경 이름(예: `(.venv)` 또는 `(my-python-project)`)이 표시되어 격리된 컨텍스트 내에서 작업 중임을 나타냅니다.
 
-3.  **가상 환경 비활성화**:
+3.  **가상 환경 버전 확인**:
+
+    ```bash
+    python -V
+    ```
+
+    활성화된 python 버전 정보를 보여줍니다.
+
+4.  **가상 환경 비활성화**:
     ```bash
     deactivate
     ```
@@ -115,16 +119,16 @@ uv --version
 1.  **패키지 설치**:
 
     ```bash
-    uv add pandas # 예시: pandas 라이브러리 설치
+    uv add langgraph # 예시: langgraph 라이브러리 설치
     ```
 
-    `uv`는 `pandas` 패키지 및 해당 종속성을 설치합니다. 또한 `pyproject.toml` 파일을 업데이트하여 `pandas`를 포함하고 `uv.lock` 파일을 정확한 버전으로 생성/업데이트합니다.
+    `uv`는 `langgraph` 패키지 및 해당 종속성을 설치합니다. 또한 `pyproject.toml` 파일을 업데이트하여 `langgraph`를 포함하고 `uv.lock` 파일을 정확한 버전으로 생성/업데이트합니다.
 
 2.  **패키지 제거**:
     ```bash
-    uv remove pandas
+    uv remove langgraph
     ```
-    이 명령은 `pandas` 패키지를 제거하고 `pyproject.toml` 및 `uv.lock`을 적절하게 업데이트합니다.
+    이 명령은 `langgraph` 패키지를 제거하고 `pyproject.toml` 및 `uv.lock`을 적절하게 업데이트합니다.
 
 ### 5. Python 파일 실행
 
@@ -144,21 +148,14 @@ Python 스크립트를 실행하는 방법은 여러 가지가 있습니다.
 
     `uv run`의 주요 장점은 가상 환경이 명시적으로 활성화되지 않은 경우에도 프로젝트의 가상 환경에서 Python 인터프리터를 자동으로 사용한다는 것입니다. 이는 매우 편리합니다!
 
-3.  **VS Code에서 실행 (Code Runner 확장 프로그램 사용)**:
+3.  **VS Code에서 실행**:
     VS Code 내에서 원활한 경험을 위해:
-    - **"Code Runner" 확장 프로그램 설치**: VS Code 확장 보기에서 "Code Runner"를 검색하여 설치합니다.
-    - **Code Runner 구성**:
-      - VS Code 설정 열기 (Ctrl+Shift+P 또는 Cmd+Shift+P를 누른 다음 "Settings"를 입력하고 "Preferences: Open User Settings (JSON)"을 선택).
-      - `code-runner.executorMap` 설정을 수정하여 활성 Python 인터프리터를 사용하도록 합니다:
-        ```json
-        {
-          "code-runner.executorMap": {
-            "python": "$pythonPath $fullFileName"
-          }
-        }
-        ```
-        이 구성은 Code Runner에게 VS Code에서 현재 선택된 Python 인터프리터(가상 환경의 인터프리터여야 함)를 사용하여 활성 파일을 실행하도록 지시합니다.
-      - 이제 VS Code의 오른쪽 상단에 있는 "실행" 버튼(종종 재생 아이콘)을 사용하거나 명령 팔레트를 통해 Python 파일을 VS Code에서 직접 실행할 수 있습니다.
+
+    - **Code Runner 실행**:
+
+    ![uv](../assert/uv-6.png)
+
+    - 이제 VS Code의 오른쪽 상단에 있는 "실행" 버튼을 통해 Python 파일을 VS Code에서 직접 실행할 수 있습니다.
 
 ### 6. VS Code Python 환경 설정
 
