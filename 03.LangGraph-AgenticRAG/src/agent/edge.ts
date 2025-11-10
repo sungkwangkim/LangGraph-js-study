@@ -63,11 +63,6 @@ const prompt = ChatPromptTemplate.fromTemplate(
   No: 문서가 질문과 관련이 없습니다.`,
   );
 
-  // const model = new ChatGoogleGenerativeAI({
-  //   model: "gemini-2.0-flash-lite",
-  // }).bindTools([tool], {
-  //   tool_choice: tool.name,
-  // });
 
   const model = new ChatOpenAI({
     model: "gpt-4o",
