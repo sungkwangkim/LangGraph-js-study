@@ -2,7 +2,6 @@ import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings } from "@langchain/openai";
-// import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import dotenvFlow from 'dotenv-flow';
 
 dotenvFlow.config();
