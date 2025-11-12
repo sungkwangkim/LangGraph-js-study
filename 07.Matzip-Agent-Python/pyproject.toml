@@ -17,4 +17,8 @@ dependencies = [
     "lxml>=6.0.2",
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
+    "streamlit>=1.36.0",
 ]
+
+[tool.setuptools]
+packages = ["agent"]
