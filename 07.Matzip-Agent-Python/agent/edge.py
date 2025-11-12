@@ -144,7 +144,7 @@ a   답변을 생성합니다.
 
 class QuestionRelevance(BaseModel):
     """사용자 질문의 관련성을 평가합니다."""
-    is_relevant: str = Field(description="질문이 '잠실 맛집 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'")
+    is_relevant: str = Field(description="질문이 '음식, 식당 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'")
 
 
 def check_question_relevance(state: GraphState) -> GraphState:
@@ -156,13 +156,29 @@ def check_question_relevance(state: GraphState) -> GraphState:
     messages = state["messages"]
     question = messages[0].content
 
+    # 이 코드는 사용자 질문에 특정 장소(예: "잠실", "강남" 등)가 언급되었는지 확인합니다.
+    # 만약 질문에 장소 정보가 없다면, 기본값으로 "잠실"을 질문 앞에 추가하여
+    # 사용자가 특정 장소를 지정하지 않아도 "잠실 맛집"과 관련된 질문으로 처리합니다.
+    # 이렇게 함으로써 에이전트가 항상 특정 지역에 대한 맛집 추천을 제공할 수 있도록 합니다.
+    # 자주 사용되는 장소 키워드 목록을 정의합니다.
+    location_keywords = ["잠실"]
+
+    # 질문에 장소 키워드가 포함되어 있는지 확인합니다.
+    has_location = any(keyword in question for keyword in location_keywords)
+
+    # 장소 정보가 없으면 질문 앞에 "잠실"을 추가합니다.
+    if not has_location:
+        print("---장소 정보 없음: '잠실' 추가---")
+        question = "잠실 " + question
+        messages[0].content = question # 업데이트된 질문으로 메시지 내용을 갱신합니다.
+
     prompt = ChatPromptTemplate.from_template(
-        """당신은 사용자 질문이 '잠실 맛집 추천'과 관련이 있는지 평가하는 평가자입니다.
+        """당신은 사용자 질문이 '잠실 음식, 식당 추천'과 관련이 있는지 평가하는 평가자입니다.
         다음은 사용자 질문입니다:
         \n ------- \n
         {question}
         \n ------- \n
-        질문이 '잠실 맛집 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'로 평가하세요.
+        질문이 '잠실 음식, 식당 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'로 평가하세요.
         'yes' 또는 'no'의 이진 점수를 부여하세요."""
     )
 

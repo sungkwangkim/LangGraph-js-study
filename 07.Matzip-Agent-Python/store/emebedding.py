@@ -8,9 +8,12 @@ load_dotenv()
 
 
 url_list = [
+"https://www.tabling.co.kr/restaurant/2887",
 "https://m.blog.naver.com/ban__di/223783862789",
 "https://lazyyellow.tistory.com/87",
 "https://funktionalflow.com/%EC%9E%A0%EC%8B%A4-%EB%A7%9B%EC%A7%91/",
+"https://lazyyellow.tistory.com/81",
+"https://m.blog.naver.com/kongsunisuni/222725641963",
 ]
 
 # 1. 블로그 글들을 로드합니다.
@@ -30,6 +33,8 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 
 doc_splits = text_splitter.split_documents(docs)
+
+print(doc_splits)
 
 
 # 3. 각 텍스트 조각을 벡터(숫자로 된 표현)로 변환하고,
