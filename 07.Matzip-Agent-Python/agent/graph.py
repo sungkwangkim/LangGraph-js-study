@@ -1,5 +1,15 @@
 from langgraph.graph import StateGraph, START, END
-from .edge import agent, grade_documents, rewrite, generate, should_retrieve, check_relevance
+from .edge import (
+    agent,
+    grade_documents,
+    rewrite,
+    generate,
+    should_retrieve,
+    check_relevance,
+    check_question_relevance,
+    decide_on_question_relevance,
+    refuse_to_answer,
+)
 from .tool import tool_node
 from .state import GraphState
 
@@ -7,13 +17,29 @@ from .state import GraphState
 builder = StateGraph(GraphState)
 
 # 순환할 노드들을 정의합니다.
+builder.add_node("check_question_relevance", check_question_relevance)
+builder.add_node("refuse_to_answer", refuse_to_answer)
 builder.add_node("agent", agent)
 builder.add_node("retrieve", tool_node)
 builder.add_node("grade_documents", grade_documents)
 builder.add_node("rewrite", rewrite)
 builder.add_node("generate", generate)
 
-builder.add_edge(START, "agent")
+builder.add_edge(START, "check_question_relevance")
+
+# 질문 관련성 확인 후 분기
+builder.add_conditional_edges(
+    "check_question_relevance",
+    decide_on_question_relevance,
+    {
+        "yes": "agent", # 관련이 있다면 바로 agent로 연결
+        "no": "refuse_to_answer",
+    },
+)
+
+builder.add_edge("refuse_to_answer", END)
+
+
 
 # 검색 여부 결정
 builder.add_conditional_edges(

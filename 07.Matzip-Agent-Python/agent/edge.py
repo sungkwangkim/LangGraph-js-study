@@ -59,7 +59,7 @@ def grade_documents(state: GraphState) -> GraphState:
         "context": last_message.content,
     })
     
-    return {"messages": [AIMessage(content="", tool_calls=[{"name": "give_relevance_score", "args": {"binary_score": score.binary_score}, "id": "0"}])]}
+    return {"messages": [AIMessage(content=score.binary_score)]}
 
 def check_relevance(state: GraphState) -> str:
     """
@@ -69,12 +69,7 @@ def check_relevance(state: GraphState) -> str:
     messages = state["messages"]
     last_message = messages[-1]
     
-    if not hasattr(last_message, "tool_calls") or not last_message.tool_calls:
-        raise ValueError("'check_relevance' 노드는 가장 최근 메시지에 도구 호출이 포함되어야 합니다.")
-    
-    tool_calls = last_message.tool_calls
-    
-    if tool_calls[0]["args"]["binary_score"] == "yes":
+    if last_message.content == "yes":
         print("---결정: 문서 관련 있음---")
         return "yes"
     
@@ -126,24 +121,81 @@ def generate(state: GraphState) -> GraphState:
     """
 a   답변을 생성합니다.
     """
+
     print("---답변 생성---")
     messages = state["messages"]
     question = messages[0].content
-    
     last_tool_message = next((msg for msg in reversed(messages) if msg.type == "tool"), None)
-    
+
+
     if not last_tool_message:
         raise ValueError("대화 기록에서 도구 메시지를 찾을 수 없습니다")
+
         
     docs = last_tool_message.content
-    
     prompt = Client().pull_prompt("rlm/rag-prompt")
-    
     llm = ChatOpenAI(model="gpt-4o", temperature=0, streaming=True)
-    
     rag_chain = prompt | llm
-    
     response = rag_chain.invoke({"context": docs, "question": question})
-    
+
     return {"messages": [response]}
+
+
+
+class QuestionRelevance(BaseModel):
+    """사용자 질문의 관련성을 평가합니다."""
+    is_relevant: str = Field(description="질문이 '잠실 맛집 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'")
+
+
+def check_question_relevance(state: GraphState) -> GraphState:
+    """
+    사용자의 질문이 '잠실 맛집 추천'과 관련이 있는지 확인합니다.
+    """
+    print("---질문 관련성 확인---")
+
+    messages = state["messages"]
+    question = messages[0].content
+
+    prompt = ChatPromptTemplate.from_template(
+        """당신은 사용자 질문이 '잠실 맛집 추천'과 관련이 있는지 평가하는 평가자입니다.
+        다음은 사용자 질문입니다:
+        \n ------- \n
+        {question}
+        \n ------- \n
+        질문이 '잠실 맛집 추천'과 관련이 있으면 'yes', 그렇지 않으면 'no'로 평가하세요.
+        'yes' 또는 'no'의 이진 점수를 부여하세요."""
+    )
+
+    model = ChatOpenAI(model="gpt-4o", temperature=0).with_structured_output(QuestionRelevance)
+    chain = prompt | model
+    relevance = chain.invoke({"question": question})
+    return {"messages": [AIMessage(content=relevance.is_relevant)]}
+
+
+def refuse_to_answer(state: GraphState) -> GraphState:
+    """
+    관련 없는 질문에 대해 답변을 거부하는 메시지를 생성합니다.
+    """
+    print("---답변 거부---")
+    return {"messages": [AIMessage(content="죄송합니다. 저는 잠실 맛집에 대한 질문에만 답변할 수 있습니다.")]}
+
+
+
+def decide_on_question_relevance(state: GraphState) -> str:
+    """
+    'check_question_relevance'의 결과를 바탕으로 분기합니다.
+    """
+    print("---질문 관련성 분기---")
+    messages = state["messages"]
+    last_message = messages[-1]
+
+    if last_message.content == "yes":
+        print("---결정: 질문 관련 있음---")
+        return "yes"
+
+    print("---결정: 질문 관련 없음---")
+
+    return "no"
+
+
 
