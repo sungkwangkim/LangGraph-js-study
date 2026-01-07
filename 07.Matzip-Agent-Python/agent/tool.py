@@ -1,14 +1,12 @@
 from langchain_classic.tools.retriever import create_retriever_tool
 from langgraph.prebuilt import ToolNode
 from .retriever import retriever
-from .state import GraphState
 
-# 잠실 맛집 블로그 게시물을 검색하는 도구를 생성합니다.
 # 직장인들의 점심 메뉴 관련 정보를 검색합니다.
 tool = create_retriever_tool(
     retriever,
-    "retrieve_blog_posts",
-    "송파구 잠실 및 잠실역 근처 점심 맛집 게시물을 검색하고 정보를 반환합니다.",
+    "retrieve_restaurants",
+    "잠실 주변의 점심 메뉴를 검색하고 정보를 반환합니다.",
 )
 
 # 사용 가능한 모든 도구를 배열로 내보냅니다.

@@ -58,7 +58,9 @@ def grade_documents(state: GraphState) -> GraphState:
         "question": messages[0].content,
         "context": last_message.content,
     })
-    
+    print(messages[0].content)
+    print(last_message.content)
+
     return {"messages": [AIMessage(content=score.binary_score)]}
 
 def check_relevance(state: GraphState) -> str:
@@ -149,7 +151,7 @@ class QuestionRelevance(BaseModel):
 
 def check_question_relevance(state: GraphState) -> GraphState:
     """
-    사용자의 질문이 '잠실 맛집 추천'과 관련이 있는지 확인합니다.
+    사용자의 질문이 '잠실 음식 및 점심메뉴 추천'과 관련이 있는지 확인합니다.
     """
     print("---질문 관련성 확인---")
 
