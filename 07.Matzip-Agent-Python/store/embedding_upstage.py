@@ -57,7 +57,6 @@ def fetch_restaurants_data(connection: pymysql.connections.Connection) -> List[D
             r.id,
             r.name,
             r.category,
-            r.signature_menu,
             r.description,
             r.naver_review_count,
             r.phone,
@@ -71,7 +70,7 @@ def fetch_restaurants_data(connection: pymysql.connections.Connection) -> List[D
             GROUP_CONCAT(DISTINCT wt.tag_name SEPARATOR ', ') AS weather_tags
         FROM restaurants r
         LEFT JOIN menus m ON r.id = m.restaurant_id 
-            AND m.price >= 7000 
+            AND m.price >= 5900 
             AND m.price <= 20000
         LEFT JOIN restaurant_weather_tags rwt ON r.id = rwt.restaurant_id
         LEFT JOIN weather_tags wt ON rwt.weather_tag_id = wt.id
@@ -111,10 +110,12 @@ def create_optimized_embedding_text(restaurant: Dict) -> str:
 ## 메뉴
 {menus_text}
 
+## 네이버 리뷰수: {restaurant.get('naver_review_count', '')}
+
 ## 특징:
 {restaurant.get('description', '')}
-위치: {restaurant.get('location_type', '')}
-날씨태그: {restaurant.get('weather_tags', '')}
+- 위치: {restaurant.get('location_type', '')}
+- 날씨태그: {restaurant.get('weather_tags', '')}
     """.strip()
     
     return optimized_text
@@ -165,10 +166,10 @@ def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
             "latitude": float(restaurant["latitude"]),
             "longitude": float(restaurant["longitude"]),
             "main_thumbnail_url": restaurant.get("main_thumbnail_url") or "",
+            "homepage_url": restaurant.get("homepage_url") or "",
             "naver_review_count": restaurant["naver_review_count"],
             "naver_id": restaurant.get("naver_id") or "",
             "phone": restaurant.get("phone") or "",
-            "signature_menu": restaurant.get("signature_menu") or "",
             "weather_tags": restaurant.get("weather_tags") or "",
         }
         documents.append(Document(page_content=content, metadata=metadata))
@@ -211,7 +212,6 @@ def test_search(vectorstore: Chroma, query: str = "냉면") -> None:
         print(f"\n--- 결과 {idx} ---")
         print(f"이름: {doc.metadata.get('name')}")
         print(f"카테고리: {doc.metadata.get('category')}")
-        print(f"대표메뉴: {doc.metadata.get('signature_menu')}")
         print(f"위치: {doc.metadata.get('location_type')}")
         print(f"리뷰수: {doc.metadata.get('naver_review_count')}")
 

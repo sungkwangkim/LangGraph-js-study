@@ -92,6 +92,23 @@ if "message_list" not in st.session_state:
 for message in st.session_state.message_list:
     with st.chat_message(message["role"]):
         st.write(message["content"])
+        sources = message.get("sources") or []
+        if sources:
+            for src in sources:
+                cols = st.columns([1, 2]) if src.get("thumbnail") else [st.container()]
+                if src.get("thumbnail"):
+                    with cols[0]:
+                        st.image(src["thumbnail"], caption=src.get("name") or "", use_column_width=True)
+                    with cols[1]:
+                        if src.get("name"):
+                            st.markdown(f"**{src['name']}**")
+                        if src.get("map_link"):
+                            st.markdown(f"[지도 보기]({src['map_link']})")
+                else:
+                    if src.get("name"):
+                        st.markdown(f"**{src['name']}**")
+                    if src.get("map_link"):
+                        st.markdown(f"[지도 보기]({src['map_link']})")
 
 if user_question := st.chat_input(placeholder="잠실 맛집에 관련된 궁금한 내용들을 말씀해주세요!"):
     with st.chat_message("user"):
@@ -101,5 +118,32 @@ if user_question := st.chat_input(placeholder="잠실 맛집에 관련된 궁금
     with st.spinner("답변을 생성하는 중입니다"):
         ai_response = get_agent_response(user_question)
         with st.chat_message("ai"):
-            st.write(ai_response)
-            st.session_state.message_list.append({"role": "ai", "content": ai_response})
+            if isinstance(ai_response, dict):
+                answer = ai_response.get("answer", "")
+                sources = ai_response.get("sources") or []
+            else:
+                answer = ai_response
+                sources = []
+
+            st.write(answer)
+
+            if sources:
+                for src in sources:
+                    cols = st.columns([1, 2]) if src.get("thumbnail") else [st.container()]
+                    if src.get("thumbnail"):
+                        with cols[0]:
+                            st.image(src["thumbnail"], caption=src.get("name") or "", use_column_width=True)
+                        with cols[1]:
+                            if src.get("name"):
+                                st.markdown(f"**{src['name']}**")
+                            if src.get("map_link"):
+                                st.markdown(f"[지도 보기]({src['map_link']})")
+                    else:
+                        if src.get("name"):
+                            st.markdown(f"**{src['name']}**")
+                        if src.get("map_link"):
+                            st.markdown(f"[지도 보기]({src['map_link']})")
+
+            st.session_state.message_list.append(
+                {"role": "ai", "content": answer, "sources": sources}
+            )
