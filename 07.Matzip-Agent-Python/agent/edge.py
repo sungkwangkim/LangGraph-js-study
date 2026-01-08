@@ -209,7 +209,7 @@ a   답변을 생성합니다.
         ㅡ
         """
     )
-    llm = ChatOpenAI(model="gpt-4o", temperature=0, streaming=True)
+    llm = ChatOpenAI(model="gpt-5.2", temperature=0, streaming=True)
     rag_chain = prompt | llm
     formatted_context = _format_docs_with_metadata(docs)
     response = rag_chain.invoke({"context": formatted_context, "question": question})
