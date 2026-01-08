@@ -11,7 +11,8 @@ def _build_source(meta: Dict[str, Any]) -> Optional[Dict[str, str]]:
     name = meta.get("name") or ""
     homepage = meta.get("homepage_url") or ""
     naver_id = meta.get("naver_id") or ""
-    map_link = homepage or (f"https://map.naver.com/p/entry/place/{naver_id}" if naver_id else "")
+    naver_map_link = f"https://map.naver.com/p/entry/place/{naver_id}" if naver_id else ""
+    map_link = naver_map_link or homepage
     thumbnail = meta.get("main_thumbnail_url") or ""
 
     if not (map_link or thumbnail):

@@ -84,9 +84,11 @@ def fetch_weather() -> Tuple[Optional[Dict], Optional[str]]:
         "temperature": temp,
         "feels_like": feels_like if feels_like is not None else temp,
         "humidity": humidity if humidity is not None else 0,
-        "precip_mm": precip_mm,
+        # "precip_mm": precip_mm,
+        "precip_mm": 30,
         "snow_cm": 0.0,
-        "wind_speed": wind_speed if wind_speed is not None else 0.0,
+        # "wind_speed": wind_speed if wind_speed is not None else 0.0,
+        "wind_speed": 30,
         "description": description,
         "pm25": pm25,
         "pm10": pm10,
@@ -94,15 +96,16 @@ def fetch_weather() -> Tuple[Optional[Dict], Optional[str]]:
     return weather, None
 
 
-def needs_indoor(weather: Optional[Dict], is_employee: bool) -> bool:
+def needs_indoor(weather: Optional[Dict]) -> bool:
     """롯데타워 근무자가 실내 이동을 권장해야 하는지 여부."""
-    if not (weather and is_employee):
+    if not (weather):
         return False
     rules = [
         weather["precip_mm"] >= 5,
         weather["snow_cm"] >= 5,
         weather["temperature"] >= 33,
-        weather["temperature"] <= -8,
+        weather["temperature"] <= -6,
+        weather["feels_like"] <= -8,
         (weather.get("pm25") or 0) >= 75,
         weather["wind_speed"] >= 9,
     ]
