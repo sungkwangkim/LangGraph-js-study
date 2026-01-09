@@ -66,14 +66,11 @@ def fetch_restaurants_data(connection: pymysql.connections.Connection) -> List[D
             r.naver_id,
             r.homepage_url,
             r.main_thumbnail_url,
-            GROUP_CONCAT(DISTINCT m.menu_name, ':', m.price ORDER BY m.price SEPARATOR ' | ') AS menus,
-            GROUP_CONCAT(DISTINCT wt.tag_name SEPARATOR ', ') AS weather_tags
+            GROUP_CONCAT(DISTINCT m.menu_name, ':', m.price ORDER BY m.price SEPARATOR ' | ') AS menus
         FROM restaurants r
         LEFT JOIN menus m ON r.id = m.restaurant_id 
             AND m.price >= 5900 
             AND m.price <= 20000
-        LEFT JOIN restaurant_weather_tags rwt ON r.id = rwt.restaurant_id
-        LEFT JOIN weather_tags wt ON rwt.weather_tag_id = wt.id
         GROUP BY r.id
         ORDER BY r.id
     """
@@ -114,42 +111,18 @@ def create_optimized_embedding_text(restaurant: Dict) -> str:
 
 ## 특징:
 {restaurant.get('description', '')}
-- 위치: {restaurant.get('location_type', '')}
-- 날씨태그: {restaurant.get('weather_tags', '')}
+
+
+## 위치: {restaurant.get('location_type', '')}
+
+## metadata
+- naver_id: {restaurant.get('naver_id', '')}
+- main_thumbnail_url: {restaurant.get('main_thumbnail_url', '')}
+
     """.strip()
     
     return optimized_text
 
-
-def create_markdown_document(restaurant: Dict) -> str:
-    """음식점 데이터를 Markdown 문자열로 변환"""
-    menus_text = ""
-    if restaurant.get("menus"):
-        menu_list = restaurant["menus"].split(" | ")
-        menus_text = "\n".join(f"  - {menu}" for menu in menu_list)
-
-    markdown = f"""# {restaurant['name']}
-
-## 기본 정보
-- **카테고리**: {restaurant['category']}
-- **대표메뉴**: {restaurant.get('signature_menu') or '정보 없음'}
-- **위치 타입**: {restaurant.get('location_type') or '일반 음식점'}
-- **네이버 리뷰수**: {restaurant.get('naver_review_count')}
-
-## 메뉴
-{menus_text or '  - 메뉴 정보 없음'}
-
-## 설명
-{restaurant.get('description') or '설명 없음'}
-
-## 날씨 태그
-{restaurant.get('weather_tags') or '태그 없음'}
-
-## 위치 정보
-- 위도: {restaurant.get('latitude')}
-- 경도: {restaurant.get('longitude')}
-"""
-    return markdown.strip()
 
 
 def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
@@ -169,8 +142,7 @@ def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
             "homepage_url": restaurant.get("homepage_url") or "",
             "naver_review_count": restaurant["naver_review_count"],
             "naver_id": restaurant.get("naver_id") or "",
-            "phone": restaurant.get("phone") or "",
-            "weather_tags": restaurant.get("weather_tags") or "",
+            "phone": restaurant.get("phone") or ""
         }
         documents.append(Document(page_content=content, metadata=metadata))
 

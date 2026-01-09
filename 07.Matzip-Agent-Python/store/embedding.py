@@ -165,6 +165,7 @@ def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
             "latitude": float(restaurant["latitude"]),
             "longitude": float(restaurant["longitude"]),
             "main_thumbnail_url": restaurant.get("main_thumbnail_url") or "",
+            "homepage_url": restaurant.get("homepage_url") or "",
             "naver_review_count": restaurant["naver_review_count"],
             "naver_id": restaurant.get("naver_id") or "",
             "phone": restaurant.get("phone") or "",

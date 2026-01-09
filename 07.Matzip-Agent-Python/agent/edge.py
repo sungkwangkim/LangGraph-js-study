@@ -1,3 +1,5 @@
+import ast
+import re
 from langgraph.graph import END
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -6,28 +8,81 @@ from langchain_core.documents import Document
 from .tool import tools
 from .state import GraphState
 from pydantic import BaseModel, Field
-from typing import Any
+from typing import Any, Dict, List, Tuple
+
+
+def _parse_metadata_from_str(raw: str) -> List[Dict[str, Any]]:
+    """
+    ToolMessage.content가 문자열일 때 repr에 포함된 metadata={}를 파싱합니다.
+    """
+    metadatas: List[Dict[str, Any]] = []
+    for match in re.finditer(r"metadata=({.*?})", raw, re.DOTALL):
+        text = match.group(1)
+        try:
+            meta = ast.literal_eval(text)
+        except Exception:
+            continue
+        if isinstance(meta, dict):
+            metadatas.append(meta)
+    return metadatas
+
+
+def _normalize_docs(docs: Any) -> List[Tuple[Dict[str, Any], str]]:
+    """
+    문자열/Document/Document 리스트/딕셔너리 형태의 입력을
+    (metadata, content) 튜플 리스트로 정규화합니다.
+    """
+    if docs is None:
+        return []
+
+    # 문자열로 들어올 경우 repr에서 metadata를 뽑아 재구성합니다.
+    if isinstance(docs, str):
+        metadatas = _parse_metadata_from_str(docs)
+        if metadatas:
+            return [(meta, "") for meta in metadatas]
+        return [({}, docs)]
+
+    try:
+        docs_iter = list(docs)
+    except TypeError:
+        return [({}, str(docs))]
+
+    normalized: List[Tuple[Dict[str, Any], str]] = []
+    for doc in docs_iter:
+        if isinstance(doc, Document):
+            normalized.append(
+                (getattr(doc, "metadata", {}) or {}, getattr(doc, "page_content", "") or "")
+            )
+            continue
+
+        if isinstance(doc, dict):
+            meta = doc.get("metadata") if "metadata" in doc else doc
+            normalized.append((meta if isinstance(meta, dict) else {}, doc.get("page_content") or doc.get("content") or ""))
+            continue
+
+        if isinstance(doc, str):
+            metadatas = _parse_metadata_from_str(doc)
+            if metadatas:
+                normalized.extend((meta, "") for meta in metadatas)
+            else:
+                normalized.append(({}, doc))
+            continue
+
+        normalized.append(({}, str(doc)))
+
+    return normalized
 
 
 def _format_docs_with_metadata(docs: Any) -> str:
     """
     문자열/Document/Document 리스트를 받아 링크·이미지 URL을 포함한 텍스트로 변환합니다.
     """
-    if docs is None:
+    print(docs)
+    normalized = _normalize_docs(docs)
+    if not normalized:
         return ""
-    if isinstance(docs, str):
-        return docs
-    if isinstance(docs, Document):
-        docs_iter = [docs]
-    else:
-        try:
-            docs_iter = list(docs)
-        except TypeError:
-            return str(docs)
-
     formatted = []
-    for idx, doc in enumerate(docs_iter, start=1):
-        metadata = getattr(doc, "metadata", {}) or {}
+    for idx, (metadata, content) in enumerate(normalized, start=1):
         name = metadata.get("name") or f"문서 {idx}"
         category = metadata.get("category") or ""
         location = metadata.get("location_type") or ""
@@ -50,7 +105,6 @@ def _format_docs_with_metadata(docs: Any) -> str:
         if thumbnail:
             lines.append(f"이미지: {thumbnail}")
 
-        content = getattr(doc, "page_content", "")
         if content:
             lines.append("본문:")
             lines.append(content)
@@ -194,16 +248,25 @@ a   답변을 생성합니다.
         1. 사용자 검색어: {question}
         2. 가격대, 리뷰 수, 위치, 특징을 종합적으로 고려
         3. 사용자 상황(날씨와, 이전에 먹었던 메뉴)에 맞는 추천
-        4. metadata에 naver_id가 있으면 네이버 지도 링크를, homepage_url이 있으면 그 링크를 포함하세요.
-        5. metadata에 main_thumbnail_url이 있으면 해당 이미지를 함께 제시하세요.
 
         응답 형식:
         - 1-2개의 최고 추천 음식점 선정
-        - 각 음식점의 강점 설명
-        - 추천 메뉴 제시
-        - 간단한 이유 설명
-        - 전체 메뉴와 가격 제시
+        - 각 음식점마다 다음 정보를 반드시 포함:
+          * 음식점 이름
+          * 썸네일 이미지: metadata의 main_thumbnail_url이 있으면 마크다운 이미지 형식으로 표시
+            예: ![음식점명](main_thumbnail_url)
+          * 네이버 지도 링크: metadata의 naver_id를 사용하여 다음 형식으로 링크 생성
+            예: [네이버 지도에서 보기](https://map.naver.com/p/entry/place/naver_id)
+          * 강점 설명
+          * 추천 메뉴 제시
+          * 간단한 이유 설명
+          * 전체 메뉴와 가격 제시
 
+        중요: 
+        - 각 음식점의 metadata에서 naver_id와 main_thumbnail_url을 추출하여 반드시 사용하세요.
+        - naver_id가 있으면 네이버 지도 링크를 생성하세요.
+        - main_thumbnail_url이 있으면 썸네일 이미지를 표시하세요.
+          
         context:
         {context}
         ㅡ

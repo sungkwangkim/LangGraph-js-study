@@ -198,6 +198,7 @@ def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
             'latitude': float(restaurant['latitude']),
             'longitude': float(restaurant['longitude']),
             'main_thumbnail_url': restaurant['main_thumbnail_url'] or '',
+            'homepage_url': restaurant['homepage_url'] or '',
             'naver_review_count': restaurant['naver_review_count'],
             'naver_id': restaurant['naver_id'] or '',
             'phone': restaurant['phone'] or '',
