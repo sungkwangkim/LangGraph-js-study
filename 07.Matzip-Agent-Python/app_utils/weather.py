@@ -103,7 +103,7 @@ def needs_indoor(weather: Optional[Dict]) -> bool:
     rules = [
         weather["precip_mm"] >= 5,
         weather["snow_cm"] >= 5,
-        weather["temperature"] >= 33,
+        weather["temperature"] >= 30,
         weather["temperature"] <= -6,
         weather["feels_like"] <= -8,
         (weather.get("pm25") or 0) >= 75,

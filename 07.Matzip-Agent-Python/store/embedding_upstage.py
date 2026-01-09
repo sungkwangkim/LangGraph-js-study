@@ -1,4 +1,5 @@
 """
+
 MySQL 데이터를 Markdown으로 만들어 ChromaDB에 임베딩하는 스크립트.
 블로그 로더 대신 DB에서 불러온 레스토랑 데이터를 사용합니다.
 """
@@ -117,6 +118,7 @@ def create_optimized_embedding_text(restaurant: Dict) -> str:
 
 ## metadata
 - naver_id: {restaurant.get('naver_id', '')}
+- homepage_url: {restaurant.get('homepage_url', '')}
 - main_thumbnail_url: {restaurant.get('main_thumbnail_url', '')}
 
     """.strip()

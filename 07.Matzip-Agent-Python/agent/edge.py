@@ -257,6 +257,8 @@ a   답변을 생성합니다.
             예: ![음식점명](main_thumbnail_url)
           * 네이버 지도 링크: metadata의 naver_id를 사용하여 다음 형식으로 링크 생성
             예: [네이버 지도에서 보기](https://map.naver.com/p/entry/place/naver_id)
+          * 홈페이지 링크: metadata의 homepage_url 사용하여 다음 형식으로 링크 생성
+            예: [홈페이지 보기](https://gall.dcinside.com/mgallery/board/view/?id=oticket&no=1542840)
           * 강점 설명
           * 추천 메뉴 제시
           * 간단한 이유 설명
