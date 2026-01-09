@@ -12,10 +12,10 @@ from app_utils.weather import (
 )
 from main import get_agent_response
 
-st.set_page_config(page_title="잠실 맛집 챗봇", page_icon="🤖")
+st.set_page_config(page_title="잠식이", page_icon="🍜")
 
-st.title("🤖 잠실 맛집 챗봇")
-st.caption("잠실 맛집에 관련된 모든것을 답해드립니다!")
+st.title("🍜 잠식이")
+st.caption("당신의 점심을 사랑하는 AI")
 
 load_dotenv()
 
