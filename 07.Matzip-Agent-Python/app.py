@@ -15,7 +15,7 @@ from main import get_agent_response
 st.set_page_config(page_title="잠식이", page_icon="🍜")
 
 st.title("🍜 잠식이")
-st.caption("당신의 점심을 사랑하는 AI")
+st.caption("당신의 점심을 사랑하는 AI 🫶")
 
 load_dotenv()
 
