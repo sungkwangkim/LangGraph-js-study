@@ -68,7 +68,7 @@ def fetch_restaurants_data(connection: pymysql.connections.Connection) -> List[D
             r.name,
             r.category,
             r.description,
-            r.naver_review_count,
+            r.naver_place_review_count as naver_review_count,
             r.phone,
             r.latitude,
             r.longitude,
