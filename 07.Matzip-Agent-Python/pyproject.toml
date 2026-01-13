@@ -12,6 +12,7 @@ dependencies = [
     "langchain-core>=1.0.4",
     "langchain-huggingface>=1.0.1",
     "langchain-openai>=1.0.2",
+    "langchain-pinecone>=0.2.13",
     "langchain-text-splitters>=1.0.0",
     "langchain-upstage>=0.7.5",
     "langgraph>=1.0.3",

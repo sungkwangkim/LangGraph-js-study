@@ -1,17 +1,18 @@
 """
-
-MySQL 데이터를 Markdown으로 만들어 ChromaDB에 임베딩하는 스크립트.
+MySQL 데이터를 Markdown으로 만들어 Pinecone에 임베딩하는 스크립트.
 블로그 로더 대신 DB에서 불러온 레스토랑 데이터를 사용합니다.
 """
 
 import os
+import time
 from typing import Dict, List
 
 import pymysql
 from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_chroma import Chroma
+from langchain_pinecone import PineconeVectorStore
 from langchain_upstage import UpstageEmbeddings
+from pinecone import Pinecone, ServerlessSpec
 
 load_dotenv()
 
@@ -34,9 +35,17 @@ if not MYSQL_CONFIG["password"]:
 if not MYSQL_CONFIG["database"]:
     raise ValueError("MYSQL_DATABASE가 .env 파일에 설정되지 않았습니다")
 
-CHROMA_DB_PATH = "./chroma_db_upstage"
-COLLECTION_NAME = "jamsil_restaurants_upstage"
 EMBEDDING_MODEL = "solar-embedding-1-large"
+EMBEDDING_DIMENSION = 4096  # solar-embedding-1-large 출력 차원
+
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+if not PINECONE_API_KEY:
+    raise ValueError("PINECONE_API_KEY가 .env 파일에 설정되지 않았습니다")
+
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "jamsil-restaurants-upstage")
+PINECONE_NAMESPACE = os.getenv("PINECONE_NAMESPACE", "public")
+PINECONE_CLOUD = os.getenv("PINECONE_CLOUD", "aws")
+PINECONE_REGION = os.getenv("PINECONE_REGION", "us-east-1")
 
 
 # ==================== 함수 정의 ====================
@@ -152,31 +161,56 @@ def convert_to_langchain_documents(restaurants: List[Dict]) -> List[Document]:
     return documents
 
 
-def create_chromadb_vectorstore(documents: List[Document]) -> Chroma:
-    """Upstage 임베딩으로 ChromaDB에 저장"""
+def ensure_pinecone_index(pc: Pinecone) -> None:
+    """필요 시 Pinecone 인덱스를 생성"""
+    existing_indexes = set(pc.list_indexes().names())
+    if PINECONE_INDEX_NAME in existing_indexes:
+        print(f"ℹ️  기존 Pinecone 인덱스 사용: {PINECONE_INDEX_NAME}")
+        return
+
+    print(f"🆕 Pinecone 인덱스 생성: {PINECONE_INDEX_NAME}")
+    pc.create_index(
+        name=PINECONE_INDEX_NAME,
+        dimension=EMBEDDING_DIMENSION,
+        metric="cosine",
+        spec=ServerlessSpec(cloud=PINECONE_CLOUD, region=PINECONE_REGION),
+    )
+
+    print("⌛ 인덱스 준비 대기 중...")
+    while not pc.describe_index(PINECONE_INDEX_NAME).status["ready"]:
+        time.sleep(1)
+    print("✅ 인덱스 준비 완료")
+
+
+def create_pinecone_vectorstore(documents: List[Document]) -> PineconeVectorStore:
+    """Upstage 임베딩으로 Pinecone에 저장"""
     try:
         print(f"📦 Upstage 임베딩 모델 초기화: {EMBEDDING_MODEL}")
         embeddings = UpstageEmbeddings(model=EMBEDDING_MODEL)
 
-        os.makedirs(CHROMA_DB_PATH, exist_ok=True)
-        print(f"💾 ChromaDB에 임베딩 중... (총 {len(documents)}개 문서)")
+        pc = Pinecone(api_key=PINECONE_API_KEY)
+        ensure_pinecone_index(pc)
 
-        vectorstore = Chroma.from_documents(
-            documents=documents,
-            embedding=embeddings,
-            collection_name=COLLECTION_NAME,
-            persist_directory=CHROMA_DB_PATH,
+        print(
+            "💾 Pinecone에 임베딩 중... "
+            f"(총 {len(documents)}개 문서, 인덱스: {PINECONE_INDEX_NAME}, 네임스페이스: {PINECONE_NAMESPACE})"
         )
 
-        print(f"✅ ChromaDB 저장 완료: {CHROMA_DB_PATH}")
-        print(f"   컬렉션명: {COLLECTION_NAME}")
+        vectorstore = PineconeVectorStore.from_documents(
+            documents=documents,
+            embedding=embeddings,
+            index_name=PINECONE_INDEX_NAME,
+            namespace=PINECONE_NAMESPACE,
+        )
+
+        print("✅ Pinecone 저장 완료")
         return vectorstore
     except Exception as exc:
-        print(f"❌ ChromaDB 생성 실패: {exc}")
+        print(f"❌ Pinecone 저장 실패: {exc}")
         raise
 
 
-def test_search(vectorstore: Chroma, query: str = "냉면") -> None:
+def test_search(vectorstore: PineconeVectorStore, query: str = "냉면") -> None:
     """임베딩 결과를 간단히 검색 테스트"""
     print(f"\n🔍 테스트 검색: '{query}'")
     results = vectorstore.similarity_search(query, k=3)
@@ -192,9 +226,9 @@ def test_search(vectorstore: Chroma, query: str = "냉면") -> None:
 
 # ==================== 메인 실행 ====================
 def main() -> None:
-    """MySQL→Chroma 전체 실행"""
+    """MySQL→Pinecone 전체 실행"""
     print("=" * 60)
-    print("MySQL → ChromaDB 임베딩 시작")
+    print("MySQL → Pinecone 임베딩 시작")
     print("=" * 60)
 
     connection = None
@@ -207,7 +241,7 @@ def main() -> None:
             return
 
         documents = convert_to_langchain_documents(restaurants)
-        vectorstore = create_chromadb_vectorstore(documents)
+        vectorstore = create_pinecone_vectorstore(documents)
 
         test_search(vectorstore, "순대국 가성비")
         test_search(vectorstore, "날씨 좋을 때 먹기 좋은 음식")
