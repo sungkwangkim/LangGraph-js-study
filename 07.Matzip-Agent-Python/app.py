@@ -150,6 +150,17 @@ def render_sources(sources):
                 st.markdown(f"[네이버 지도 열기]({src['map_link']})")
 
 
+@st.cache_data(ttl=1800)  # 30분 캐시
+def get_cached_agent_response(question: str):
+    """질문에 대한 AI 응답을 캐시합니다. 오류 응답은 캐시하지 않습니다."""
+    response = get_agent_response(question)
+    # 응답이 dictionary 형태이고 'answer' 키가 있을 때만 정상으로 간주
+    if not isinstance(response, dict) or "answer" not in response:
+        # Streamlit은 예외가 발생한 실행은 캐시하지 않음
+        raise ValueError("Invalid response from agent")
+    return response
+
+
 is_employee = bool(location) and is_lotte_tower_worker(
     location["latitude"], location["longitude"]
 )
@@ -229,13 +240,16 @@ if (
         {"role": "user", "content": weather_question}
     )
     with st.spinner("날씨와 위치에 맞춰 맛집을 추천 중입니다"):
-        ai_response = get_agent_response(weather_question)
-        if isinstance(ai_response, dict):
-            answer = ai_response.get("answer", "")
-            sources = ai_response.get("sources") or []
-        else:
-            answer = ai_response
-            sources = []
+        try:
+            ai_response = get_cached_agent_response(weather_question)
+        except ValueError:
+            ai_response = {
+                "answer": "앗! 죄송합니다. API 할당량을 다 써버렸어요. 초기화 될때까지 좀 기다려주세요 🙏",
+                "sources": [],
+            }
+
+        answer = ai_response.get("answer", "")
+        sources = ai_response.get("sources") or []
 
         st.session_state.message_list.append(
             {"role": "ai", "content": answer, "sources": sources}
